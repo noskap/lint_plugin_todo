@@ -1,6 +1,8 @@
 library lint_plugin_todo;
 
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/error/listener.dart';
+import 'package:analyzer/src/dart/ast/ast.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 
 // This is the entrypoint of our custom linter
@@ -11,35 +13,34 @@ class _ExampleLinter extends PluginBase {
   /// We list all the custom warnings/infos/errors
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) => [
-        RequireTodoComment(),
-        RequireTodoTicketNumber(),
+        const RequireTodoComment(),
+        const RequireTodoTicketNumber(),
       ];
 }
 
 class RequireTodoComment extends DartLintRule {
   const RequireTodoComment() : super(code: _code);
 
-  /// Metadata about the warning that will show-up in the IDE.
-  /// This is used for `// ignore: code` and enabling/disabling the lint
   static const _code = LintCode(
     name: 'require_todo_comment',
-    problemMessage: 'This is the description of our custom lint',
+    problemMessage: 'TODO comments should have a comment',
   );
 
   @override
   void run(
-    CustomLintResolver resolver,
-    ErrorReporter reporter,
-    CustomLintContext context,
-  ) {
-    // Our lint will highlight all variable declarations with our custom warning.
-    context.registry.addVariableDeclaration((node) {
-      // "node" exposes metadata about the variable declaration. We could
-      // check "node" to show the lint only in some conditions.
-
-      // This line tells custom_lint to render a waring at the location of "node".
-      // And the warning shown will use our `code` variable defined above as description.
-      reporter.reportErrorForNode(code, node);
+      CustomLintResolver resolver,
+      ErrorReporter reporter,
+      CustomLintContext context,
+      ) {
+    context.registry.addSimpleIdentifier((SimpleIdentifier node) {
+      Token? commentToken = node.beginToken.precedingComments;
+      final pattern = RegExp(r'^// TODO$');
+      while (commentToken != null) {
+        if (pattern.hasMatch(commentToken.lexeme)) {
+          reporter.reportErrorForToken(code, commentToken);
+        }
+        commentToken = commentToken.next;
+      }
     });
   }
 }
@@ -51,7 +52,7 @@ class RequireTodoTicketNumber extends DartLintRule {
   /// This is used for `// ignore: code` and enabling/disabling the lint
   static const _code = LintCode(
     name: 'require_todo_ticket_number',
-    problemMessage: 'This is the description of our custom lint',
+    problemMessage: 'TODO comments should have a ticket number',
   );
 
   @override
@@ -60,14 +61,12 @@ class RequireTodoTicketNumber extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    // Our lint will highlight all variable declarations with our custom warning.
-    context.registry.addVariableDeclaration((node) {
-      // "node" exposes metadata about the variable declaration. We could
-      // check "node" to show the lint only in some conditions.
-
-      // This line tells custom_lint to render a waring at the location of "node".
-      // And the warning shown will use our `code` variable defined above as description.
-      reporter.reportErrorForNode(code, node);
+    context.registry.addSimpleIdentifier((SimpleIdentifier node) {
+      final commentToken = node.beginToken.precedingComments;
+      final pattern = RegExp(r'TODO \w+-\d+');
+      if (commentToken != null && !pattern.hasMatch(commentToken.lexeme)) {
+        reporter.reportErrorForNode(code, node);
+      }
     });
   }
 }

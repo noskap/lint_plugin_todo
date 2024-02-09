@@ -1,6 +1,6 @@
 name: lint_plugin_todo
-description: "A new Flutter project."
-version: 0.0.1
+description: "Lint rules for TODO comments in Dart code."
+version: 0.0.2+5
 homepage:
 
 environment:
