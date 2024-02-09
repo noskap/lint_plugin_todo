@@ -1,0 +1,73 @@
+library lint_plugin_todo;
+
+import 'package:analyzer/error/listener.dart';
+import 'package:custom_lint_builder/custom_lint_builder.dart';
+
+// This is the entrypoint of our custom linter
+PluginBase createPlugin() => _ExampleLinter();
+
+/// A plugin class is used to list all the assists/lints defined by a plugin.
+class _ExampleLinter extends PluginBase {
+  /// We list all the custom warnings/infos/errors
+  @override
+  List<LintRule> getLintRules(CustomLintConfigs configs) => [
+        RequireTodoComment(),
+        RequireTodoTicketNumber(),
+      ];
+}
+
+class RequireTodoComment extends DartLintRule {
+  const RequireTodoComment() : super(code: _code);
+
+  /// Metadata about the warning that will show-up in the IDE.
+  /// This is used for `// ignore: code` and enabling/disabling the lint
+  static const _code = LintCode(
+    name: 'require_todo_comment',
+    problemMessage: 'This is the description of our custom lint',
+  );
+
+  @override
+  void run(
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
+    // Our lint will highlight all variable declarations with our custom warning.
+    context.registry.addVariableDeclaration((node) {
+      // "node" exposes metadata about the variable declaration. We could
+      // check "node" to show the lint only in some conditions.
+
+      // This line tells custom_lint to render a waring at the location of "node".
+      // And the warning shown will use our `code` variable defined above as description.
+      reporter.reportErrorForNode(code, node);
+    });
+  }
+}
+
+class RequireTodoTicketNumber extends DartLintRule {
+  const RequireTodoTicketNumber() : super(code: _code);
+
+  /// Metadata about the warning that will show-up in the IDE.
+  /// This is used for `// ignore: code` and enabling/disabling the lint
+  static const _code = LintCode(
+    name: 'require_todo_ticket_number',
+    problemMessage: 'This is the description of our custom lint',
+  );
+
+  @override
+  void run(
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
+    // Our lint will highlight all variable declarations with our custom warning.
+    context.registry.addVariableDeclaration((node) {
+      // "node" exposes metadata about the variable declaration. We could
+      // check "node" to show the lint only in some conditions.
+
+      // This line tells custom_lint to render a waring at the location of "node".
+      // And the warning shown will use our `code` variable defined above as description.
+      reporter.reportErrorForNode(code, node);
+    });
+  }
+}
