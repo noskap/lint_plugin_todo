@@ -40,13 +40,11 @@ class RequireTodoComment extends DartLintRule {
       Token? commentToken = node.beginToken.precedingComments;
       while (commentToken != null) {
         if (todoSelector.hasMatch(commentToken.lexeme)) {
-          if (todoCommentPattern.hasMatch(commentToken.lexeme)) {
-            // match found, do nothing
-          } else {
+          if (!todoCommentPattern.hasMatch(commentToken.lexeme)) {
             reporter.reportErrorForToken(code, commentToken);
           }
-          commentToken = commentToken.next;
         }
+        commentToken = commentToken.next;
       }
     });
   }
@@ -72,13 +70,11 @@ class RequireTodoTicketNumber extends DartLintRule {
       Token? commentToken = node.beginToken.precedingComments;
       while (commentToken != null) {
         if (todoSelector.hasMatch(commentToken.lexeme)) {
-          if (todoTicketNumberPattern.hasMatch(commentToken.lexeme)) {
-            // match found, do nothing
-          } else {
+          if (!todoTicketNumberPattern.hasMatch(commentToken.lexeme)) {
             reporter.reportErrorForToken(code, commentToken);
           }
-          commentToken = commentToken.next;
         }
+        commentToken = commentToken.next;
       }
     });
   }
