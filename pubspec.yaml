@@ -1,6 +1,6 @@
 name: lint_plugin_todo
 description: "Lint rules for TODO comments in Dart code."
-version: 0.0.2+5
+version: 0.0.2+6
 homepage:
 
 environment:
