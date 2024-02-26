@@ -34,7 +34,7 @@ class RequireTodoComment extends DartLintRule {
       ) {
     context.registry.addSimpleIdentifier((SimpleIdentifier node) {
       Token? commentToken = node.beginToken.precedingComments;
-      final pattern = RegExp(r'^// TODO$');
+      final RegExp pattern = RegExp(r'^// TODO$');
       while (commentToken != null) {
         if (pattern.hasMatch(commentToken.lexeme)) {
           reporter.reportErrorForToken(code, commentToken);
@@ -63,9 +63,9 @@ class RequireTodoTicketNumber extends DartLintRule {
   ) {
     context.registry.addSimpleIdentifier((SimpleIdentifier node) {
       Token? commentToken = node.beginToken.precedingComments;
-      final pattern = RegExp(r'TODO \w+-\d+');
+      final RegExp pattern = RegExp(r'TODO \w+-\d+');
       while (commentToken != null) {
-        if (!pattern.hasMatch(commentToken.lexeme)) {
+        if (pattern.hasMatch(commentToken.lexeme)) {
           reporter.reportErrorForToken(code, commentToken);
         }
         commentToken = commentToken.next;
