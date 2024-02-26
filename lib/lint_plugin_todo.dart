@@ -8,6 +8,8 @@ import 'package:custom_lint_builder/custom_lint_builder.dart';
 // This is the entrypoint of our custom linter
 PluginBase createPlugin() => _TodoLinter();
 
+final RegExp todoSelector = RegExp(r'TODO');
+
 /// A plugin class is used to list all the assists/lints defined by a plugin.
 class _TodoLinter extends PluginBase {
   /// We list all the custom warnings/infos/errors
@@ -28,18 +30,22 @@ class RequireTodoComment extends DartLintRule {
 
   @override
   void run(
-      CustomLintResolver resolver,
-      ErrorReporter reporter,
-      CustomLintContext context,
-      ) {
-    context.registry.addSimpleIdentifier((SimpleIdentifier node) {
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
+    context.registry.addComment((Comment node) {
       Token? commentToken = node.beginToken.precedingComments;
-      final RegExp pattern = RegExp(r'^// TODO$');
       while (commentToken != null) {
-        if (pattern.hasMatch(commentToken.lexeme)) {
-          reporter.reportErrorForToken(code, commentToken);
+        if (todoSelector.hasMatch(commentToken.lexeme)) {
+          final RegExp pattern = RegExp(r'TODO\s?.{6,}');
+          if (pattern.hasMatch(commentToken.lexeme)) {
+            // match found, do nothing
+          } else {
+            reporter.reportErrorForToken(code, commentToken);
+          }
+          commentToken = commentToken.next;
         }
-        commentToken = commentToken.next;
       }
     });
   }
