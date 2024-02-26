@@ -67,14 +67,18 @@ class RequireTodoTicketNumber extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    context.registry.addSimpleIdentifier((SimpleIdentifier node) {
+    context.registry.addComment((Comment node) {
       Token? commentToken = node.beginToken.precedingComments;
-      final RegExp pattern = RegExp(r'TODO \w+-\d+');
       while (commentToken != null) {
-        if (pattern.hasMatch(commentToken.lexeme)) {
-          reporter.reportErrorForToken(code, commentToken);
+        if (todoSelector.hasMatch(commentToken.lexeme)) {
+          final RegExp pattern = RegExp(r'TODO \w+-\d+');
+          if (pattern.hasMatch(commentToken.lexeme)) {
+            // match found, do nothing
+          } else {
+            reporter.reportErrorForToken(code, commentToken);
+          }
+          commentToken = commentToken.next;
         }
-        commentToken = commentToken.next;
       }
     });
   }
